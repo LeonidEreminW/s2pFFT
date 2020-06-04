@@ -1,4 +1,30 @@
 function [header, data] = read_s2p (fname)
+##  Read s2p file.
+##
+##  File is composed of N records of 2-port network data.
+##  Minimal validation of data is done. Correctness of the data is
+##  responsibility of the programmer creating the s2p file.
+##
+##  Returns
+##  header : struct
+##      Options of the Touchstone format.
+##      Fields
+##      units : string
+##          Frequency units: "GHz", "MHz", "KHz", "Hz".
+##      kind : string
+##          Kind of network parameter: "S", "Y", "Z", "H", "G".
+##      format : string
+##          Format of the parameter data: "DB" (db/angle),
+##          "MA" (magnitude/angle), "RI" (real/image).
+##          Attention:  accordingly to Touchstone format, angles are given in
+##                      degrees!
+##      R : positive real number
+##          Resistance in ohms.
+##  data : real matrix of shape (N, 9)
+##      First column contains signals' frequencies (in increasing order,
+##      accordingly to Touchstone specification).
+##      Other columns describe network parameter data (in pairs).
+
     ## For 2-ports variation we have 9 columns.
     num_cols = 9;
     ## Count how many lines of each types exist.

@@ -1,4 +1,4 @@
-function [header, data] = read_s2p (fname)
+function [header, freq, data] = read_s2p (fname)
 ##  Read s2p file.
 ##
 ##  File is composed of N records of 2-port network data.
@@ -20,12 +20,12 @@ function [header, data] = read_s2p (fname)
 ##                      degrees!
 ##      R : positive real number
 ##          Resistance in ohms.
-##  data : real matrix of shape (N, 9)
-##      First column contains signals' frequencies (in increasing order,
-##      accordingly to Touchstone specification).
-##      Other columns describe network parameter data (in pairs).
+##  freq : real column vector
+##      Signal frequencies.
+##  data : real matrix of shape (N, 8)
+##      Columns describe network parameter data (in pairs).
 
-    ## For 2-ports variation we have 9 columns.
+    ## For 2-ports variation we have 9 columns in file.
     num_cols = 9;
     ## Count how many lines of each types exist.
     [num_comments, num_headers, num_data_entries] = count_lines (fname);
@@ -34,12 +34,14 @@ function [header, data] = read_s2p (fname)
     endif
     ## Set an alias for number of data lines.
     N = num_data_entries;
-    data = zeros (N, num_cols);
+    data = zeros (N, num_cols-1);
+    freq = zeros (N, 1);
+    tmprow = zeros (1, num_cols);
     fid = fopen (fname, "r");
     ## Index for the current line of data.
     ind = 0;
-    while (! feof(fid))
-        aLine = fgetl(fid);
+    while (! feof (fid))
+        aLine = fgetl (fid);
         switch aLine(1)
             case "!"
                 ## ignore
@@ -47,7 +49,9 @@ function [header, data] = read_s2p (fname)
                 header_line = aLine;
             otherwise
                 ind += 1;
-                data(ind, :) = sscanf (aLine, "%f", num_cols);
+                tmprow(:) = sscanf (aLine, "%f", num_cols);
+                freq(ind) = tmprow(1);
+                data(ind, :) = tmprow(2:end);
         endswitch
     endwhile
     fclose (fid);

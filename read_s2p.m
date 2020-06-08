@@ -63,7 +63,7 @@ function header = parse_header (header_line)
 ##
 ##  The header line is supposed to be of the form:
 ##      # <units:str> <kind:str> <format:str> R <resistance:int>
-    chunks = strsplit (header_line)';  # Transposed!
+    chunks = strsplit (strtrim (header_line))';  # Transposed!
     wrong_start = (cell2mat (chunks(1, 1)) != "#");
     not_R = (cell2mat (chunks(5, 1)) != "R") && (cell2mat (chunks(5, 1)) != "r");
     wrong_size = (size (chunks, 1) != 6);

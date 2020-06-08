@@ -1,7 +1,18 @@
-[data, freq] = s2p2data ('Initial_DC.s2p');
+file1 = 'Initial_DC.s2p';
+file2 = 'Initial.s2p';
+fname = file1;
+
+[data, freq] = s2p2data (fname);
 s11 = squeeze(data(1, 1, :));
-##p112xDC = DC(data(1, 1, :),freq);
-##s11= [p112xDC; data(1, 1, :)];
+
+if strcmp(fname,file2)
+  disp('calculate DC')
+  ##calculate s11 in 0 and put it in S11 vector
+  p112xDC = DC (s11,freq);
+  s11 = [p112xDC; s11];
+endif
+
+##makes s11 vector symmetrical
 S11s = makeSymmetric(s11);
 xn = ifft(S11s);
 ## Mathematically, t_n = n / ((N-1)*f),
